@@ -41,6 +41,7 @@ async function main() {
   const filtered = getTopMoviesUris(page);
 
   for (const title of filtered) {
+    await new Promise((res) => setTimeout(() => res(), 3000)); // avoid being blocked by server
     const detailed = await fetch(`${IMDB_DOMAIN}${title}`);
   
     // scrap original title
