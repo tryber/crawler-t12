@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "express": "^4.17.1",
+    "html-dom-parser": "^1.0.2",
+    "node-fetch": "^3.0.0"
+  }
+}
