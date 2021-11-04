@@ -1,4 +1,6 @@
 const axios = require('axios');
+const utf8 = require('utf8');
+const he = require('he');
 
 const IMDB_DOMAIN = 'https://www.imdb.com'
 const TOP_MOVIES_URI = '/chart/top/'
@@ -33,6 +35,7 @@ const scrapeTitle = (page) => {
 const scrapeSynopsis = (page) => {
   const synopsisRegexp = new RegExp(SYNOPSIS_REGEXP);
   synopsis = synopsisRegexp.exec(page);
+
   return synopsis[0].split('\"')[5].replace('\\r\\n', '');
 }
 
@@ -43,14 +46,14 @@ async function main() {
   
     for (const title of filtered) {
       try {
-        await new Promise((res) => setTimeout(() => res(), 3000)); // avoid being blocked by server
+        await new Promise((res) => setTimeout(() => res(), 3000)); // TRYING TO avoid being blocked by server
         const detailed = await fetch(`${IMDB_DOMAIN}${title}`);
       
         // scrap original title
-        const originalTitle = scrapeTitle(detailed);
+        const originalTitle = utf8.encode(he.decode(scrapeTitle(detailed)));
     
         // scrap synposis
-        const synposis = scrapeSynopsis(detailed);
+        const synposis = utf8.encode(he.decode(scrapeSynopsis(detailed)));
     
         console.log(`Title: ${originalTitle}\nSynopsis: ${synposis}\n`);
       } catch (err) {
