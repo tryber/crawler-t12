@@ -23,14 +23,14 @@ const getTopMoviesUris = (page) => {
   return filtered;
 }
 
-const scrapTitle = (page) => {
+const scrapeTitle = (page) => {
   const originalTitleRegexp = new RegExp(ORIGINAL_TITLE_REGEXP);
   const originalTitle = originalTitleRegexp.exec(page);
 
   return originalTitle[0].split(': ')[1].split('<')[0];
 }
 
-const scrapSynopsis = (page) => {
+const scrapeSynopsis = (page) => {
   const synopsisRegexp = new RegExp(SYNOPSIS_REGEXP);
   synopsis = synopsisRegexp.exec(page);
   return synopsis[0].split('\"')[5].replace('\\r\\n', '');
@@ -47,10 +47,10 @@ async function main() {
         const detailed = await fetch(`${IMDB_DOMAIN}${title}`);
       
         // scrap original title
-        const originalTitle = scrapTitle(detailed);
+        const originalTitle = scrapeTitle(detailed);
     
         // scrap synposis
-        const synposis = scrapSynopsis(detailed);
+        const synposis = scrapeSynopsis(detailed);
     
         console.log(`Title: ${originalTitle}\nSynopsis: ${synposis}\n`);
       } catch (err) {
