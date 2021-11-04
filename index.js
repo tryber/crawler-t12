@@ -12,11 +12,11 @@ const fetch = async (url) => {
 }
 
 const getTopMoviesUris = (page) => {
-  const filtered = []
+  const filtered = new Set();
   const regexp = new RegExp(TITLE_REGEXP);
   page.split('\n').forEach(line => {
     if (title = regexp.exec(line)) {
-      filtered.push(title[0].split('\"')[1])
+      filtered.add(title[0].split('\"')[1])
     }
   })
 
@@ -37,20 +37,29 @@ const scrapSynopsis = (page) => {
 }
 
 async function main() {
-  const page = await fetch(`${IMDB_DOMAIN}${TOP_MOVIES_URI}`);
-  const filtered = getTopMoviesUris(page);
-
-  for (const title of filtered) {
-    await new Promise((res) => setTimeout(() => res(), 3000)); // avoid being blocked by server
-    const detailed = await fetch(`${IMDB_DOMAIN}${title}`);
+  try {
+    const page = await fetch(`${IMDB_DOMAIN}${TOP_MOVIES_URI}`);
+    const filtered = getTopMoviesUris(page);
   
-    // scrap original title
-    const originalTitle = scrapTitle(detailed);
-
-    // scrap synposis
-    const synposis = scrapSynopsis(detailed);
-
-    console.log(`Title: ${originalTitle}\nSynopsis: ${synposis}\n`);
+    for (const title of filtered) {
+      try {
+        await new Promise((res) => setTimeout(() => res(), 3000)); // avoid being blocked by server
+        const detailed = await fetch(`${IMDB_DOMAIN}${title}`);
+      
+        // scrap original title
+        const originalTitle = scrapTitle(detailed);
+    
+        // scrap synposis
+        const synposis = scrapSynopsis(detailed);
+    
+        console.log(`Title: ${originalTitle}\nSynopsis: ${synposis}\n`);
+      } catch (err) {
+        console.error(err.message);
+        continue;
+      }
+    }
+  } catch (err) {
+    console.error(err.message);
   }
 }
 
